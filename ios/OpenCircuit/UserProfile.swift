@@ -47,6 +47,10 @@ struct UserProfileSettingsView: View {
     /// Presents the onboarding/welcome flow again from About ▸ "How it works" (#103).
     @State private var showOnboarding = false
 
+    /// Ringpool Health egress: fallback token entry (the primary path is the
+    /// `ringpool://set?token=…` deep link). Local buffer only — written to the Keychain on submit.
+    @State private var egressTokenInput = ""
+
     // Apple Health connection. Auth lives here so there's ALWAYS a reachable entry point — the
     // dashboard's authorize button is a post-sync nudge that only appears when there's un-synced
     // history. `health` queries the shared HKHealthStore, so its status matches the dashboard's.
@@ -381,6 +385,28 @@ struct UserProfileSettingsView: View {
             .onChange(of: scenePhase) { _, phase in
                 // Coming back from the Health app: reflect freshly-flipped toggles immediately.
                 if phase == .active { Task { await refreshHealthAuthState() } }
+            }
+
+            // Ringpool Apple Health egress (collector: health-ingest.deansdomain.com): the
+            // fallback token field (primary provisioning is the `ringpool://set?token=…` deep
+            // link) and the one-line status. No new screen, no charts.
+            Section("Health export") {
+                SecureField("Collector token (ringpool://set?token=… sets it too)", text: $egressTokenInput)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .onSubmit {
+                        if !egressTokenInput.isEmpty {
+                            HealthEgressBridge.tokenStore.save(token: egressTokenInput)
+                            egressTokenInput = ""
+                        }
+                        HealthEgressBridge.syncAfterRingSync()
+                    }
+                if let status = HealthEgressBridge.statusLine {
+                    Text(status).font(.caption).foregroundStyle(.secondary)
+                }
+                Text("Reads your Apple Health data (the ring's metrics, sleep and workouts) and "
+                     + "uploads batches to the collector. Nothing leaves the phone until a token is set.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
 
             if ringChosen {

@@ -417,6 +417,10 @@ struct ContentView: View {
                 if syncing == false {
                     recordForegroundSync()
                     flushHealth()
+                    // Apple Health egress (Ringpool collector): after the ring sync, read the
+                    // HealthKit types and POST a batch. Fire-and-forget Task — never blocks UI;
+                    // a failure only shows in the Profile status line and never moves the anchor.
+                    HealthEgressBridge.syncAfterRingSync()
                     evaluateHealthAlerts()   // #73/#85: a fresh sync may cross a threshold
                     // #145: evaluate the sedentary reminder only now, against the freshly-synced
                     // `lastActivityAt` — so it can't fire on stale pre-sync data right after a walk.
@@ -459,6 +463,7 @@ struct ContentView: View {
             // the fall-through, matching the order the parsers are strict in — each returns
             // nil/false for anything that isn't its own link, so neither can swallow the other's.
             .onOpenURL { url in
+                if HealthEgressBridge.consumeToken(from: url) { return }
                 if WorkoutQuickLink.isActiveSession(url) {
                     handleActiveWorkoutLink()
                 } else {

@@ -102,6 +102,10 @@ struct RingBackgroundSyncService {
             // background path too, not just the manual button (#44).
             if mirrored { ObservabilityStore().recordHealthWrite() }
         }
+        // Apple Health egress (Ringpool collector): the BGTask trigger — same fire-and-forget
+        // call as the foreground sync-completion hook. If iOS expires the task before the POST
+        // lands, the anchor simply does not advance and the next run re-sends.
+        HealthEgressBridge.syncAfterRingSync()
 
         // Phase-timing breadcrumb (#119 early-termination): splits the wake into connect vs drain vs
         // flush so the next activity-log export can attribute an early kill to a CONNECT-overrun (F3

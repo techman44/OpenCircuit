@@ -1,6 +1,8 @@
 name: OpenCircuit
 options:
-  bundleIdPrefix: com.standardsoftwaresolutions
+  # Dean's namespace (Ringpool rebrand). PRODUCT_NAME / the `OpenCircuit` scheme / target names
+  # stay for CLI compatibility; the USER-facing name is CFBundleDisplayName below.
+  bundleIdPrefix: com.deansdomain
   deploymentTarget:
     iOS: "17.0"
   createIntermediateGroups: true
@@ -53,6 +55,9 @@ targets:
     dependencies:
       - package: OpenCircuitKit
         product: OpenCircuitKit
+      # Apple Health egress module (read + POST to the collector). See ios/OpenCircuitKit.
+      - package: OpenCircuitKit
+        product: HealthEgress
       # Zepp OS protocol core for the Amazfit Helio Strap (#215 phase 3). Pure Swift + CommonCrypto.
       - package: OpenCircuitKit
         product: ZeppKit
@@ -76,9 +81,10 @@ targets:
           UIImageName: LaunchLogo
           UIImageRespectsSafeAreaInsets: true
           UIColorName: LaunchBackground
-        # User-facing app name (home screen, Settings). Independent of PRODUCT_NAME / bundle id,
-        # which stay "OpenCircuit"/com.standardsoftwaresolutions.opencircuit internally (#100 rebrand).
-        CFBundleDisplayName: OpenCircuit
+        # User-facing app name (home screen, Settings). Ringpool rebrand: display name and all
+        # bundle ids live in Dean's namespace (com.deansdomain.ringpool); the internal PRODUCT_NAME
+        # and scheme stay "OpenCircuit" so the existing CLI build commands keep working.
+        CFBundleDisplayName: Ringpool
         # Version/build come from the build settings below (single source of truth). XcodeGen
         # generates this Info.plist, so these MUST live here, not be hand-edited into the plist.
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
@@ -99,31 +105,31 @@ targets:
         "UISupportedInterfaceOrientations~ipad": [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         LSSupportsOpeningDocumentsInPlace: true
         # HealthKit auth strings (Phase 4) — required or the app crashes on request. Shown verbatim
-        # in the iOS permission dialogs, so they use the user-facing name "OpenCircuit".
-        NSHealthShareUsageDescription: "OpenCircuit reads your Apple Health data, such as sleep, heart rate, and activity, to show your trends and baselines alongside your ring's or strap's readings. If you turn on background syncing for the strap, it also reads your iPhone's step count, only to know when to sync."
-        NSHealthUpdateUsageDescription: "OpenCircuit writes your ring's or strap's metrics into Apple Health."
+        # in the iOS permission dialogs, so they use the user-facing name "Ringpool".
+        NSHealthShareUsageDescription: "Ringpool reads your Apple Health data, such as sleep, heart rate, and activity, to show your trends and baselines alongside your ring's or strap's readings. If you turn on background syncing for the strap, it also reads your iPhone's step count, only to know when to sync."
+        NSHealthUpdateUsageDescription: "Ringpool writes your ring's or strap's metrics into Apple Health."
         # Live Activities (workout modal): required for the app to start an ActivityKit Live Activity
         # showing live workout time / calories / heart rate on the Lock Screen + Dynamic Island.
         NSSupportsLiveActivities: true
-        # Custom URL scheme — the app's ONE deep link, handled in ContentView's `.onOpenURL`.
-        # Required by the Control Centre / Lock Screen "Log a Headache" control: that control lives
-        # in the WorkoutWidget extension, which has no App Group and therefore cannot reach the
-        # app's SwiftData store, so it opens `opencircuit://headache/log?when=now` instead of
-        # writing a label it could only lose. See Shared/HeadacheQuickLink.swift. MUST live here —
-        # XcodeGen regenerates Info.plist and would strip a hand-edited key.
+        # Custom URL schemes — handled in ContentView's `.onOpenURL`. `opencircuit` stays (the
+        # Control Centre / Lock Screen "Log a Headache" control and the workout Live Activity tap
+        # target both hard-code opencircuit:// links — see Shared/HeadacheQuickLink.swift);
+        # `ringpool` is the new namespace's scheme, used by the egress token deep link
+        # ringpool://set?token=… . MUST live here — XcodeGen regenerates Info.plist.
         CFBundleURLTypes:
-          - CFBundleURLName: com.standardsoftwaresolutions.opencircuit
+          - CFBundleURLName: com.deansdomain.ringpool
             CFBundleTypeRole: Editor
             CFBundleURLSchemes:
               - opencircuit
+              - ringpool
         # BLE (Phase 3) — required to connect to the ring, or the Amazfit Helio Strap (#215).
-        NSBluetoothAlwaysUsageDescription: "OpenCircuit connects to your RingConn ring or Amazfit Helio Strap over Bluetooth Low Energy."
+        NSBluetoothAlwaysUsageDescription: "Ringpool connects to your RingConn ring or Amazfit Helio Strap over Bluetooth Low Energy."
         # Location (Phase 3, #75) — used ONLY during an active workout: to map the GPS route
         # (outdoor; the ring has no GPS) AND, with the `location` background mode below, to keep
         # the app alive so heart-rate recording continues while the phone is locked. Not used at
         # any other time. The `location` background mode is REQUIRED before setting
         # allowsBackgroundLocationUpdates=true at runtime, or CoreLocation throws.
-        NSLocationWhenInUseUsageDescription: "OpenCircuit uses your location during an active workout to map outdoor routes and to keep recording your heart rate while your phone is locked. It is never used outside of a workout."
+        NSLocationWhenInUseUsageDescription: "Ringpool uses your location during an active workout to map outdoor routes and to keep recording your heart rate while your phone is locked. It is never used outside of a workout."
         # Background sync while suspended (docs/HANDOFF_MACOS_IOS.md). `processing` enables the
         # BGProcessingTask (longer runtime) so the optical-HR poll can clear its ~60 s warm-up in
         # the background (#45/#50 follow-up). iOS still runs it at its discretion, so this is
@@ -136,10 +142,10 @@ targets:
           - fetch
           - processing
         BGTaskSchedulerPermittedIdentifiers:
-          - com.standardsoftwaresolutions.opencircuit.bgrefresh
-          - com.standardsoftwaresolutions.opencircuit.bgprocessing
+          - com.deansdomain.ringpool.bgrefresh
+          - com.deansdomain.ringpool.bgprocessing
     # HealthKit entitlement enabled (2026-06-15) — signed under the paid Standard Software Solutions team
-    # (DEVELOPMENT_TEAM below). The App ID com.standardsoftwaresolutions.opencircuit carries the HealthKit
+    # (DEVELOPMENT_TEAM below). The App ID com.deansdomain.ringpool carries the HealthKit
     # capability in that account; automatic signing registers it on first build.
     entitlements:
       path: OpenCircuit/OpenCircuit.entitlements
@@ -148,7 +154,7 @@ targets:
       properties: { com.apple.developer.healthkit: true, com.apple.developer.healthkit.background-delivery: true }
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.standardsoftwaresolutions.opencircuit
+        PRODUCT_BUNDLE_IDENTIFIER: com.deansdomain.ringpool
         # MARKETING_VERSION / CURRENT_PROJECT_VERSION are defined at PROJECT level (top of this file)
         # so the app and the WorkoutWidget extension always share one build number. The app's
         # Info.plist references them via $(MARKETING_VERSION)/$(CURRENT_PROJECT_VERSION).
@@ -180,7 +186,7 @@ targets:
     info:
       path: WorkoutWidget/Info.plist
       properties:
-        CFBundleDisplayName: OpenCircuit Workout
+        CFBundleDisplayName: Ringpool Workout
         # MUST match the app's version/build (project-level settings) — App Store validation rejects
         # an extension whose CFBundleVersion differs from the containing app's.
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
@@ -189,7 +195,7 @@ targets:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.standardsoftwaresolutions.opencircuit.WorkoutWidget
+        PRODUCT_BUNDLE_IDENTIFIER: com.deansdomain.ringpool.WorkoutWidget
         SWIFT_VERSION: "5.9"
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: NO
@@ -210,7 +216,7 @@ targets:
       - target: OpenCircuit
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.standardsoftwaresolutions.opencircuit.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.deansdomain.ringpool.tests
         SWIFT_VERSION: "5.9"
         GENERATE_INFOPLIST_FILE: YES
 

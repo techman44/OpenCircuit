@@ -13,7 +13,7 @@ protocol BGTaskScheduling {
 extension BGTaskScheduler: BGTaskScheduling {}
 
 struct BackgroundRefreshScheduler {
-    static let identifier = "com.standardsoftwaresolutions.opencircuit.bgrefresh"
+    static let identifier = "com.deansdomain.ringpool.bgrefresh"
     static let refreshInterval: TimeInterval = 15 * 60
 
     /// Separate BGProcessingTask (#45). A processing task gets a much longer runtime window than
@@ -21,7 +21,7 @@ struct BackgroundRefreshScheduler {
     /// warm-up in the background. HONEST: iOS schedules processing tasks at its own discretion
     /// (commonly overnight while charging), so this improves the odds of a real background HR
     /// lock but does NOT guarantee a daytime one.
-    static let processingIdentifier = "com.standardsoftwaresolutions.opencircuit.bgprocessing"
+    static let processingIdentifier = "com.deansdomain.ringpool.bgprocessing"
     /// Ask for the processing task less often than the app refresh — it's the heavier, longer
     /// run, and iOS coalesces/throttles these regardless.
     static let processingInterval: TimeInterval = 60 * 60
