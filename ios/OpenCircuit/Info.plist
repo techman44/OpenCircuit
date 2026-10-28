@@ -4,13 +4,13 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.standardsoftwaresolutions.opencircuit.bgrefresh</string>
-		<string>com.standardsoftwaresolutions.opencircuit.bgprocessing</string>
+		<string>com.deansdomain.ringpool.bgrefresh</string>
+		<string>com.deansdomain.ringpool.bgprocessing</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>OpenCircuit</string>
+	<string>Ringpool</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -29,10 +29,11 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.standardsoftwaresolutions.opencircuit</string>
+			<string>com.deansdomain.ringpool</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>opencircuit</string>
+				<string>ringpool</string>
 			</array>
 		</dict>
 	</array>
@@ -43,13 +44,13 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>OpenCircuit connects to your RingConn ring or Amazfit Helio Strap over Bluetooth Low Energy.</string>
+	<string>Ringpool connects to your RingConn ring or Amazfit Helio Strap over Bluetooth Low Energy.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>OpenCircuit reads your Apple Health data, such as sleep, heart rate, and activity, to show your trends and baselines alongside your ring's or strap's readings. If you turn on background syncing for the strap, it also reads your iPhone's step count, only to know when to sync.</string>
+	<string>Ringpool reads your Apple Health data, such as sleep, heart rate, and activity, to show your trends and baselines alongside your ring's or strap's readings. If you turn on background syncing for the strap, it also reads your iPhone's step count, only to know when to sync.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>OpenCircuit writes your ring's or strap's metrics into Apple Health.</string>
+	<string>Ringpool writes your ring's or strap's metrics into Apple Health.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>OpenCircuit uses your location during an active workout to map outdoor routes and to keep recording your heart rate while your phone is locked. It is never used outside of a workout.</string>
+	<string>Ringpool uses your location during an active workout to map outdoor routes and to keep recording your heart rate while your phone is locked. It is never used outside of a workout.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>UIBackgroundModes</key>
@@ -61,13 +62,6 @@
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
@@ -77,5 +71,12 @@
 		<key>UIImageRespectsSafeAreaInsets</key>
 		<true/>
 	</dict>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
 </dict>
 </plist>
