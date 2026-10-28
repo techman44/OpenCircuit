@@ -35,7 +35,10 @@ public struct EgressSample: Codable, Equatable, Sendable {
     public var osVersion: String
     /// The source app's version string that produced the sample.
     public var version: String
-    /// The sample's `HKObjectIdentifier` UUID string.
+    /// The sample identifier as a string. On the shipped Xcode 27.1 HealthKit SDKs this is
+    /// `HKObject.UUID` (NSUUID) → `uuidString`; where the opaque `HKObjectIdentifier` rawValue
+    /// (semicolon-bearing) is available it is the preferred form — the collector accepts
+    /// printable ASCII 1..512 precisely for that shape. See HealthKitEgressReader's note.
     public var uuid: String
 
     private enum CodingKeys: String, CodingKey {

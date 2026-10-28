@@ -177,6 +177,12 @@ public final class HealthKitEgressReader: HealthEgressReading, @unchecked Sendab
             deviceId: deviceId,
             osVersion: osString,
             version: revision.version ?? "",
+            // Xcode 27.1's shipped HealthKit headers (macOS 27 + iPhoneOS 27.1) type
+            // HKObject.UUID as plain NSUUID and contain NO HKObjectIdentifier class —
+            // `.rawValue` does not compile here, and the app's own HealthKitWriter uses
+            // `.uuid.uuidString` everywhere (delete-by-uuidStrings round-trip included).
+            // The collector's uuid validator ([printable ASCII]{1,512}) accepts either shape,
+            // so uuidString is the honest identifier on this toolchain.
             uuid: sample.uuid.uuidString)
     }
 
