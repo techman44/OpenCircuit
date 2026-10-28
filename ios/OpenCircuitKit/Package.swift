@@ -12,14 +12,29 @@ import PackageDescription
 // `OpenCircuitKit` product.
 let package = Package(
     name: "OpenCircuitKit",
+    platforms: [
+        // The `HealthEgress` target's HealthKit surface needs the modern initializers; the app
+        // is iOS 17+ anyway (ios/project.yml deploymentTarget), and `swift test` runs on macOS.
+        .iOS("17.0"),
+        .macOS("14.0"),
+    ],
     products: [
         .library(name: "OpenCircuitKit", targets: ["OpenCircuitKit"]),
         .library(name: "ZeppKit", targets: ["ZeppKit"]),
+        // Apple Health EGRESS (read + upload to the collector). Its own target, so the
+        // `OpenCircuitKit` purity (Foundation-only, `swift test` anywhere) is untouched;
+        // this one may import HealthKit/Security behind availability gates.
+        .library(name: "HealthEgress", targets: ["HealthEgress"]),
         // Test-only: the simulated strap shared by ZeppKitTests and the app's OpenCircuitTests.
         .library(name: "ZeppKitTesting", targets: ["ZeppKitTesting"]),
     ],
     targets: [
         .target(name: "OpenCircuitKit"),
+        .target(name: "HealthEgress"),
+        // Batch-contract + anchor-rule tests with an injected fake URLSession and fake samples.
+        // No test here needs a live HKHealthStore (that is why the reader sits behind
+        // `HealthEgressReading`) — same stance as the existing suite's HK note.
+        .testTarget(name: "HealthEgressTests", dependencies: ["HealthEgress"]),
         // `swift test` (needs Xcode for XCTest) runs this suite.
         .testTarget(
             name: "OpenCircuitKitTests",
