@@ -212,8 +212,14 @@ targets:
       # The simulated Helio Strap, shared with ZeppKitTests (#215). Compiled in from its one file so
       # ZeppKit's symbols resolve against the host app's single copy (no second static link).
       - path: OpenCircuitKit/Sources/ZeppKitTesting/FakeZeppDevice.swift
+      # Egress module tests: compiled into the app test target as well, so the
+      # scheme's test action actually runs them (the package product is invisible to
+      # xcodebuild test — see the 29-Oct run, identical counts to upstream master).
+      - path: OpenCircuitKit/Tests/HealthEgressTests
     dependencies:
       - target: OpenCircuit
+      - package: OpenCircuitKit
+        product: HealthEgress
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.deansdomain.ringpool.tests
