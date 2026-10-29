@@ -6,7 +6,10 @@
 	<key>method</key>
 	<string>app-store-connect</string>
 	<key>teamID</key>
-	<string>765RD9BJ8C</string>
+	<!-- Dean's Apple Developer team (matches the mini's Apple Distribution identity and the
+	     Ringpool App ID/provisioning profile). 765RD9BJ8C was the upstream VENDOR's team and
+	     made exports fail with "App Store Connect access for 765RD9BJ8C is required". -->
+	<string>ZGKJ6KP5MX</string>
 	<key>signingStyle</key>
 	<string>automatic</string>
 	<!-- Upload directly to App Store Connect during export (needs the API key args in the script). -->

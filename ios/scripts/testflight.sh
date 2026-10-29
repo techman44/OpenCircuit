@@ -6,9 +6,10 @@
 #   1. Paid Apple Developer Program active; Account Holder has accepted the latest
 #      Program License Agreement in App Store Connect.
 #   2. The app record must exist in App Store Connect for bundle id
-#      com.deansdomain.ringpool (Ringpool). NOTE: POST /v1/apps is rejected for EVERY API key
-#      role (Apple 403: apps allow GET/UPDATE, not CREATE) — create it once in the ASC web UI
-#      (My Apps -> New App) or via a Transporter/Xcode Apple-ID upload. See docs/TESTFLIGHT.md.
+#      com.deansdomain.ringpool (Ringpool — created 2026-10-29, Apple ID 6828254757,
+#      SKU RINGPOOL001). NOTE: POST /v1/apps is rejected for EVERY API key role
+#      (Apple 403: apps allow GET/UPDATE, not CREATE) — new records require the ASC
+#      web UI (My Apps -> New App) or a fastlane/Transporter Apple-ID session.
 #   3. An App Store Connect API key (Users and Access -> Integrations -> App Store Connect API):
 #        - download the .p8 once,
 #        - note the Key ID and Issuer ID.
