@@ -29,6 +29,10 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."   # -> ios/
 
+# Non-interactive SSH shells lack Homebrew's bin dir (where xcodegen lives); be explicit
+# so the script works over ssh/cron exactly as it does in Terminal.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
 : "${ASC_KEY_ID:?Set ASC_KEY_ID (App Store Connect API key id)}"
 : "${ASC_ISSUER_ID:?Set ASC_ISSUER_ID (App Store Connect issuer id)}"
 : "${ASC_KEY_PATH:?Set ASC_KEY_PATH (path to the AuthKey_*.p8 file)}"
