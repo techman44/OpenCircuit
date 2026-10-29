@@ -61,3 +61,18 @@ Internal testing (≤100 ASC team members) is instant after processing. **Extern
 - **Background modes** (`location`, `bluetooth-central`, `processing`): justify `location` as
   workout-only (route + keep-alive for HR while locked) — matches `NSLocationWhenInUseUsageDescription`.
 - **Privacy label** in ASC: "Data Not Collected" (consistent with `PrivacyInfo.xcprivacy`).
+
+## Ringpool (this fork) — release facts
+
+- ASC app: **Ringpool**, Apple ID 6828254757, bundle `com.deansdomain.ringpool`, SKU RINGPOOL001.
+- Team: **ZGKJ6KP5MX** (Dean's paid team) in project.yml/ExportOptions — the vendor's
+  765RD9BJ8C breaks archive/export on any machine without that account.
+- API: Key ID `SA74ZFJ7V8` (Admin), Issuer `69a6de72-af42-47e3-e053-5b8c7c11a4d1`;
+  .p8 on the mac mini (~/.appstoreconnect/private_keys). `POST /v1/apps` is forbidden for
+  EVERY API key role (verified 3 roles) — new app records need the ASC web UI or fastlane
+  with an Apple-ID session.
+- Headless ships: testflight.sh handles keychain unlock + codesign partition (KEYCHAIN_PASS)
+  and Homebrew PATH.
+- Scripts: `ios/scripts/asc.sh` (minimal ASC API caller: METHOD PATH [JSON]),
+  `ios/scripts/backfill_apple_health.py` (streams a parsed Apple Health export SQLite into
+  the collector warehouse; see its docstring; run on the Mac holding the export).
