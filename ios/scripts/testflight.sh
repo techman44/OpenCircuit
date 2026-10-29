@@ -6,7 +6,9 @@
 #   1. Paid Apple Developer Program active; Account Holder has accepted the latest
 #      Program License Agreement in App Store Connect.
 #   2. The app record exists in App Store Connect for bundle id
-#      com.standardsoftwaresolutions.opencircuit.
+#      com.deansdomain.ringpool (Ringpool). It does NOT exist yet as of 2026-10-29; an
+#      Admin-scoped API key can create it via POST /v1/apps (App Manager keys are read+update
+#      only on that endpoint).
 #   3. An App Store Connect API key (Users and Access -> Integrations -> App Store Connect API):
 #        - download the .p8 once,
 #        - note the Key ID and Issuer ID.
