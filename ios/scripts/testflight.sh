@@ -54,6 +54,14 @@ xcodebuild archive \
   -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
 echo "==> Exporting + uploading to App Store Connect"
+# Headless (SSH) exports fail with codesign errSecInternalComponent unless the login
+# keychain is unlocked AND codesign partition-list access is granted first. Set
+# KEYCHAIN_PASS to the login keychain password to enable this; skip when running from
+# a GUI terminal where the keychain is already unlocked:
+if [ -n "${KEYCHAIN_PASS:-}" ]; then
+  security unlock-keychain -p "$KEYCHAIN_PASS" ~/Library/Keychains/login.keychain-db
+  security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASS" >/dev/null
+fi
 xcodebuild -exportArchive \
   -archivePath "$ARCHIVE" \
   -exportOptionsPlist ExportOptions.plist \
