@@ -144,9 +144,10 @@ targets:
         BGTaskSchedulerPermittedIdentifiers:
           - com.deansdomain.ringpool.bgrefresh
           - com.deansdomain.ringpool.bgprocessing
-    # HealthKit entitlement enabled (2026-06-15) — signed under the paid Standard Software Solutions team
-    # (DEVELOPMENT_TEAM below). The App ID com.deansdomain.ringpool carries the HealthKit
-    # capability in that account; automatic signing registers it on first build.
+    # HealthKit entitlement enabled (2026-06-15). Ringpool signs under Dean's paid team
+    # ZGKJ6KP5MX (765RD9BJ8C = the upstream vendor's S&S Holdings team — wrong for this fork;
+    # last night's manual archive already used Dean's, and the App ID com.deansdomain.ringpool
+    # with its HealthKit capability lives in Dean's account).
     entitlements:
       path: OpenCircuit/OpenCircuit.entitlements
       # #233 (decision 33): HealthKit background delivery of the iPhone's step count, the strap's
@@ -168,10 +169,10 @@ targets:
         # NO AppIcon.appiconset left in Assets.xcassets or actool errors on the duplicate name.
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # On-device signing. Set here so CLI device builds work after `xcodegen generate`
-        # (which would otherwise drop the team and fail signing). Team 765RD9BJ8C =
-        # S&S Holdings International LLC (DBA Standard Software Solutions); paid, HealthKit-capable.
+        # (which would otherwise drop the team and fail signing). Team ZGKJ6KP5MX =
+        # Dean mcintosh (personal paid team, HealthKit-capable) — Ringpool's home.
         CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: 765RD9BJ8C
+        DEVELOPMENT_TEAM: ZGKJ6KP5MX
 
   # WidgetKit app-extension that renders the workout Live Activity (Lock Screen + Dynamic Island).
   # It has NO OpenCircuitKit dependency on purpose: the only shared code is Shared/ (the ActivityKit
@@ -199,10 +200,10 @@ targets:
         SWIFT_VERSION: "5.9"
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: NO
-        # Same paid team as the app so automatic signing registers the extension's App ID and the
-        # embedded extension is signed consistently for device builds / TestFlight.
+        # Same paid team as the app (ZGKJ6KP5MX) so automatic signing registers the extension's
+        # App ID and the embedded extension is signed consistently for device builds / TestFlight.
         CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: 765RD9BJ8C
+        DEVELOPMENT_TEAM: ZGKJ6KP5MX
 
   OpenCircuitTests:
     type: bundle.unit-test
