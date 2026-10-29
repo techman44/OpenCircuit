@@ -125,6 +125,17 @@ struct UserProfileSettingsView: View {
     /// Present the explainer when the user has never seen it, OR has seen a version whose promises
     /// this build no longer keeps. Version 1 said "it won't notify you" — that is now false, and a
     /// latched Bool would have left the retraction undelivered forever.
+    /// Commit the egress token entry: Save trims, stores to Keychain, clears the field and
+    /// fires one sync — the keyboard's Done key does the same thing (build 91 only had Done,
+    /// which was invisible: dismissing the keyboard lost the paste with no feedback at all).
+    private func saveEgressToken() {
+        let trimmed = egressTokenInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        HealthEgressBridge.tokenStore.save(token: trimmed)
+        egressTokenInput = ""
+        HealthEgressBridge.syncAfterRingSync()
+    }
+
     private func presentHeadacheOnboardingIfNeeded() {
         let d = UserDefaults.standard
         var seen = d.integer(forKey: HeadacheDefaults.onboardingVersion)
@@ -390,17 +401,29 @@ struct UserProfileSettingsView: View {
             // Ringpool Apple Health egress (collector: health-ingest.deansdomain.com): the
             // fallback token field (primary provisioning is the `ringpool://set?token=…` deep
             // link) and the one-line status. No new screen, no charts.
+            // Explicit Save/Test (user feedback on build 91): .onSubmit-only was invisible —
+            // dismissing the keyboard lost the paste, and a SecureField always re-renders blank,
+            // so "did it save?" was unanswerable on-device.
             Section("Health export") {
-                SecureField("Collector token (ringpool://set?token=… sets it too)", text: $egressTokenInput)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .onSubmit {
-                        if !egressTokenInput.isEmpty {
-                            HealthEgressBridge.tokenStore.save(token: egressTokenInput)
-                            egressTokenInput = ""
-                        }
-                        HealthEgressBridge.syncAfterRingSync()
-                    }
+                if let stored = HealthEgressBridge.tokenStore.load() {
+                    Label("Token stored (…\(stored.suffix(4)))", systemImage: "checkmark.seal.fill")
+                        .foregroundStyle(.green)
+                        .font(.callout)
+                } else {
+                    Label("No token stored", systemImage: "xmark.seal")
+                        .foregroundStyle(.secondary)
+                        .font(.callout)
+                }
+                HStack {
+                    SecureField("Collector token", text: $egressTokenInput)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .submitLabel(.done)
+                        .onSubmit { saveEgressToken() }
+                    Button("Save") { saveEgressToken() }
+                        .disabled(egressTokenInput.isEmpty)
+                }
+                Button("Test now") { HealthEgressBridge.syncAfterRingSync() }
                 if let status = HealthEgressBridge.statusLine {
                     Text(status).font(.caption).foregroundStyle(.secondary)
                 }
