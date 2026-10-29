@@ -5,13 +5,15 @@
 # Prereqs (one-time, see docs/TESTFLIGHT.md):
 #   1. Paid Apple Developer Program active; Account Holder has accepted the latest
 #      Program License Agreement in App Store Connect.
-#   2. The app record exists in App Store Connect for bundle id
-#      com.deansdomain.ringpool (Ringpool). It does NOT exist yet as of 2026-10-29; an
-#      Admin-scoped API key can create it via POST /v1/apps (App Manager keys are read+update
-#      only on that endpoint).
+#   2. The app record must exist in App Store Connect for bundle id
+#      com.deansdomain.ringpool (Ringpool). NOTE: POST /v1/apps is rejected for EVERY API key
+#      role (Apple 403: apps allow GET/UPDATE, not CREATE) — create it once in the ASC web UI
+#      (My Apps -> New App) or via a Transporter/Xcode Apple-ID upload. See docs/TESTFLIGHT.md.
 #   3. An App Store Connect API key (Users and Access -> Integrations -> App Store Connect API):
 #        - download the .p8 once,
 #        - note the Key ID and Issuer ID.
+#      For this account: Key ID 5D6627S3L2 (pier-admin), Issuer ID
+#      69a6de72-af42-47e3-e053-5b8c7c11a4d1 (not secret without the .p8).
 #
 # Usage:
 #   export ASC_KEY_ID=XXXXXXXXXX
